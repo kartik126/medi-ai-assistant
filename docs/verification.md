@@ -4,7 +4,9 @@ This is a local document-research prototype. The following are observed developm
 
 ## Automated checks
 
-The latest implementation run passed **201 tests with no skips**, including real PostgreSQL/pgvector integration and API/UI checks. Six upstream deprecation warnings were reported. Coverage includes ingestion failures, per-session/document scope, citation resolution, blank versus filled fields, table projection, Word conversion, original-byte preservation, concise summaries and rejection of changed values/units/identifiers or unsupported certainty.
+The latest implementation run passed **231 tests with no skips**, including real PostgreSQL/pgvector integration and API/UI checks. Six upstream deprecation warnings were reported. Coverage includes ingestion failures, per-session/document scope, citation resolution, blank versus filled fields, table projection, Word conversion, original-byte preservation, concise summaries and rejection of changed values/units/identifiers or unsupported certainty.
+
+A later core-biopsy regression identified false rejection of negative ability wording, contractions and absence phrasing. The lexical guard now recognizes those constructions before the unchanged support audit. New unit/API checks cover varied tissue limitations, three-page citations, positive-diagnosis rejection and audit rejection.
 
 Tests inject model responses for deterministic behavior. They do not measure the medical accuracy of the live model. For commands and the isolated test database setup, see the [README](../README.md#verification-and-developer-checks).
 
@@ -15,6 +17,7 @@ The configured local models are `gemma3:4b` and `qwen3-embedding:0.6b` through O
 - Earlier evidence-selection/table repairs passed 53 development scenarios and three Labcorp table checks. The table checks included TP53 variant allele frequency (17.9%) and ERBB2 gain fold change (7.1), with citations to physical page 4. Production code derives fields from document text coordinates; these expected values appear only in tests/evaluation.
 - Word support passed three live cases across mixed DOCX, DOC and PDF uploads, with converted-page citations and original-file preservation.
 - The later paraphrasing change initially passed **50/56** automatic live checks. Four valid answers were rejected by conservative checks; two supported weekly-activity answers missed a narrow wording regex. After refinements, all six cases passed targeted replay against unchanged expectations. The other 50 were not rerun on that last refinement; this was not a fresh all-56 final-revision run.
+- A later measurement-history repair passed seven live checks: the exact question with all documents and the case report alone, a reworded history question, a surgery-size question, and biopsy, age/location and outcome regressions. The history answers include five source observations across physical pages 1–3, with explicit four-/five-month timing, exact quotes and unchanged original bytes. Intermediate incomplete/rejected answers led to scoped dimension retrieval and source-derived numeric field rendering. This is a targeted development replay, not a rerun of every prior live suite.
 - Three final case-report checks covered a treatment/outcome paraphrase, age/location and an explicit verbatim request. Exact quotations were checked against stored page text, cited PDFs were fetched, and original uploaded bytes were preserved.
 
 The summary verifier uses the same local model family as the writer. It can make mistakes and is not an independent clinical reviewer. Automatic string/status/page checks can miss unsupported meaning or reject valid wording. Independent held-out documents and human/clinical acceptance remain pending.

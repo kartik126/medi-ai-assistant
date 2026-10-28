@@ -373,7 +373,7 @@ Useful service addresses:
 
 Verified local profile: Python 3.11.0, Ollama 0.40.11, PostgreSQL 17.11, pgvector 0.8.7 and LibreOffice 26.8.1.1 on Apple M3 / 16 GB. The database image digest is pinned in `compose.yaml`; exact Python package versions are recorded in `requirements.resolved.txt`. Installer updates can change tool versions, so use the readiness checks on your installation.
 
-The latest implementation verification passed **201 automated tests**, including real PostgreSQL integration. Live summary checks initially passed 50/56 automatic cases; all six remaining cases passed targeted replay after fixes, while the other 50 were not rerun on that final refinement. These are development results, not a clinical accuracy estimate. See the [verification summary](docs/verification.md). Raw local evaluation outputs and uploaded source documents are excluded from Git.
+The latest implementation verification passed **231 automated tests**, including real PostgreSQL integration. Live summary checks initially passed 50/56 automatic cases; all six remaining cases passed targeted replay after fixes, while the other 50 were not rerun on that final refinement. These are development results, not a clinical accuracy estimate. See the [verification summary](docs/verification.md). Raw local evaluation outputs and uploaded source documents are excluded from Git.
 
 Optional tests, from an activated project Terminal tab:
 

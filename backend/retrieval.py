@@ -2,6 +2,7 @@
 import numpy as np
 import re
 from backend.errors import AppError
+from backend.measurements import size_question, timed_size_units, SIZE_SQL
 
 
 def retrieval_questions(question):
@@ -15,7 +16,13 @@ def retrieval_questions(question):
     independent = all(re.match(
         r'^(?:what\b|how\b|why\b|when\b|where\b|does\b|is\b|are\b|summarize\b|describe\b|compare\b|the\s+.+?\b(?:guide|booklet|plan|report|handbook)\b)',
         p, re.I) for p in parts[1:])
-    if len(parts) > 1 and independent and all(len(re.findall(r'\w+', p)) >= 4 for p in parts):
+    # "When they were measured" depends on the first clause's subject. A
+    # separate retrieval for that fragment loses both the object and intent.
+    dependent = any(re.match(
+        r'^(?:what|when|where|how|why)\s+(?:(?:is|are|was|were|did|do|does|can|could|should|would)\s+)?'
+        r'(?:it|its|they|their|them|these|those|he|she|this|that)\b', p, re.I)
+        for p in parts[1:])
+    if len(parts) > 1 and independent and not dependent and all(len(re.findall(r'\w+', p)) >= 4 for p in parts):
         return parts
     return [question]
 
@@ -40,6 +47,7 @@ def flattened_numeric_table(text):
 
 def select_context(rows, max_chunks=6, max_chars=8000, min_similarity=-1.0, question=None):
     selected, used = [], 0
+    dimensions = bool(question and size_question(question))
     if question:
         from backend.evidence import rank_units
         # Exact lexical anchors complement semantic ranking within the already
@@ -49,6 +57,10 @@ def select_context(rows, max_chunks=6, max_chars=8000, min_similarity=-1.0, ques
             return evidence[0].score if evidence else -1
         rows = sorted(rows, key=score, reverse=True)
     for row in rows:
+        if dimensions and not any(timed_size_units(row)):
+            # Unrelated selected documents must not consume slots needed by
+            # actual measurement observations in another selected document.
+            continue
         # Dense flattened columns have lost their row relationships. Keep them
         # stored for source inspection, but do not ask the text-only model to
         # reconstruct unsupported table semantics.
@@ -86,6 +98,21 @@ def retrieve(conn, sid, document_ids, vector, identity, settings, question=None)
         ORDER BY c.embedding <=> %s,c.chunk_id LIMIT %s
     """, (np.array(vector, dtype=np.float32), sid, document_ids, identity,
           np.array(vector, dtype=np.float32), settings.retrieval_candidates)).fetchall()
+    if question and size_question(question):
+        # A vague size-history question can rank discussion above measurements.
+        # Supplement with bounded dimension-bearing chunks inside the SAME
+        # document/session/embedding scope; final context limits still apply.
+        sizes = conn.execute("""
+            SELECT c.chunk_id,c.document_id,c.page_number,c.text,c.start_char,c.end_char,d.filename,p.text AS page_text,
+                   1 - (c.embedding <=> %s) AS similarity
+            FROM chunks c JOIN documents d ON d.document_id=c.document_id AND d.session_id=c.session_id
+            JOIN pages p ON p.document_id=c.document_id AND p.session_id=c.session_id AND p.page_number=c.page_number
+            WHERE c.session_id=%s AND c.document_id=ANY(%s::uuid[]) AND d.status='ready'
+                  AND c.embedding_identity=%s AND c.text ~* %s
+            ORDER BY c.embedding <=> %s,c.chunk_id LIMIT %s
+        """, (np.array(vector, dtype=np.float32), sid, document_ids, identity, SIZE_SQL,
+              np.array(vector, dtype=np.float32), min(40, settings.retrieval_candidates * 3))).fetchall()
+        rows = list({r['chunk_id']: r for r in rows + sizes}.values())
     if question and rows:
         # A semantic hit may end immediately before a small inline table.
         # Include bounded same-page neighbors, retaining all scope/identity

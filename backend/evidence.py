@@ -6,6 +6,7 @@ import math
 import re
 import pymupdf
 from backend.citations import whitespace
+from backend.measurements import size_question, timed_size_units
 
 STOP = set('a an the and or of for to in on from by with as at is are was were be been being it this that these those what which who how much many does do did can could should someone person according guide booklet document report plan summarize describe describes described say says stated state states provided selected supplied source sources each per about toward towards gradually work build up weekly daily goal target value amount first second both handbook handbooks fictional training example sample ask called current measured recorded patient my your filled named exact appears appear'.split())
 GENERIC_TITLE = STOP | set('new type action way preventing clinical use not physical page revision laboratory service'.split())
@@ -33,6 +34,7 @@ def words(text):
               'cells': 'cell', 'percentages': 'percent', 'percentage': 'percent',
               'weeks': 'week', 'grams': 'g', 'milligrams': 'mg', 'mutations': 'mutation',
               'variants': 'variant', 'monocytes': 'monocyte', 'abilities': 'ability',
+              'measurements': 'measurement', 'dimensions': 'dimension', 'sizes': 'size',
               'weekly': 'week', 'daily': 'day', 'aged': 'age',
               'located': 'location', 'involving': 'location'}
     return [normal.get(t, t) for t in tokens]
@@ -226,7 +228,9 @@ def rank_units(question, sources, profiles, part=0):
     q = terms(question) - (aliases if named_source else set())
     q -= {'intensity', 'moderate'} if 'symptom' in q else set()
     include_admin = bool(re.search(r'\b(?:age|birth|name|identity|identifier|date)\b', question, re.I))
-    all_units = list(unit for source in sources for unit in units(source, include_admin))
+    dimensions = size_question(question)
+    all_units = list(unit for source in sources for unit in
+                     (timed_size_units(source) if dimensions else units(source, include_admin)))
     vocabulary = set().union(*(terms(u.text+' '+u.context) for u in all_units)) if all_units else set()
     for term in list(q):
         if term not in vocabulary and len(term) >= 4:
@@ -234,12 +238,19 @@ def rank_units(question, sources, profiles, part=0):
             if match:
                 q.add(match[0])
     frequencies = Counter(term for unit in all_units for term in terms(unit.text+' '+unit.context))
+    if dimensions:
+        # A dimension itself is an anchor even when prose says "lesion" while
+        # the question says "mass". This changes ranking, never source text.
+        q.add('size')
+        q -= {'lesion', 'tumor', 'tumour', 'nodule'}
+        q.add('mass')
+        frequencies['size'] = len(all_units)
     weights = {term: math.log(2 + len(all_units)/(1+frequencies[term])) for term in q}
     ranked = []
     zone = re.search(r'\b(\w+)[ -]zone\b', question, re.I)
     # "Mass" is also a lesion/topic noun. Its presence alone does not make a
     # question quantitative (e.g. "where was the mass located?").
-    quantity = bool(re.search(r'\b(?:how much|amount|levels?|goals?|targets?|duration|number|mfi|percentage|intervals?|revision dates?)\b', question, re.I))
+    quantity = not dimensions and bool(re.search(r'\b(?:how much|amount|levels?|goals?|targets?|duration|number|mfi|percentage|intervals?|revision dates?)\b', question, re.I))
     if zone:
         q.update(terms(zone[0]))
         weights.update({t: math.log(2 + len(all_units)/(1+frequencies[t])) for t in terms(zone[0])})
@@ -247,6 +258,10 @@ def rank_units(question, sources, profiles, part=0):
         if request_kind(question) == 'measurement' and re.search(r'\b(?:reference|normal|example|threshold|range)\b', unit.text, re.I):
             continue
         body = terms(unit.text)
+        if dimensions:
+            body.add('size')
+            if body & {'mass', 'lesion', 'tumor', 'tumour', 'nodule'}:
+                body.add('mass')
         context = terms(unit.context)
         # Wrapped prose lines can start/end halfway through neighboring
         # sentences and duplicate a complete sentence candidate. Retain line
@@ -307,7 +322,7 @@ def rank_units(question, sources, profiles, part=0):
         if key not in seen:
             seen.add(key)
             result.append(unit)
-    if result:
+    if result and not dimensions:
         # Relative lexical focus within already-retrieved evidence, not a
         # claimed probability of answerability or a universal cosine floor.
         floor = result[0].score * .45

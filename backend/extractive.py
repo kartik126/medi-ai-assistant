@@ -10,6 +10,7 @@ from backend.errors import AppError
 from backend.retrieval import retrieve, retrieval_questions
 from backend.presentation import clean_text
 from backend.table_answers import field_units
+from backend.measurements import size_history_question, size_excerpt
 
 SELECT_SYSTEM = '''Select evidence items that directly answer the question.
 Some items are server-verified table field/value statements with supporting raw quotations.
@@ -21,6 +22,9 @@ Return status insufficient_evidence and an empty selections list if evidence is 
 Select all requested parts and all relevant recommendations in a requested section, but do not
 select adjacent unrelated topics or demographic details. Preserve negation and qualifiers.
 For a comparison, include the requested facts for each document, including revision dates.
+For lesion-size history, include distinct reported dimensions with their examination/imaging/
+operative context and any explicit timing. Surgical margins are not the lesion's dimensions.
+Different measurement methods do not by themselves prove growth or a chronological size change.
 Output JSON only: {"status":"answered","selections":["E1"]}.'''
 
 
@@ -175,6 +179,20 @@ def answer(store, conn, sid, request, session, ids, identity):
                         and sibling.source['document_id'] == unit.source['document_id']
                         and sibling not in selected and len(selected) < 6):
                     selected.append(sibling)
+    if size_history_question(request.question):
+        # "Different/all measurements" asks for the eligible observations,
+        # including values repeated at another stage. Do not let selection
+        # silently omit one simply because a shorter observation is easier.
+        for unit in candidates:
+            if not size_excerpt(unit.text):
+                continue
+            covered = any(unit.source['document_id'] == other.source['document_id']
+                          and unit.source['page_number'] == other.source['page_number']
+                          and whitespace(unit.text) in whitespace(other.text) for other in selected)
+            if not covered:
+                if len(selected) >= 6:
+                    return abstain('The reported measurements exceed the answer evidence budget. Ask about a narrower time period or examination.')
+                selected.append(unit)
     # Every planned part must be represented. A missing part is a failure,
     # never a complete answer containing only the easiest topic.
     if any(not any(i in u.parts for u in selected) for i in range(len(plans))):
@@ -192,6 +210,12 @@ def answer(store, conn, sid, request, session, ids, identity):
         and (len(u.text) < len(other.text) or j < i)
         for j, other in enumerate(selected))]
     selected.sort(key=lambda u: (u.part, str(u.source['document_id']), u.source['page_number']))
+    if size_history_question(request.question):
+        # Preserve document reading order without inferring dates for undated
+        # observations or sorting unrelated measurement methods by magnitude.
+        selected.sort(key=lambda u: (u.part, str(u.source['document_id']),
+            u.source['page_number'], u.source.get('start_char',0),
+            whitespace(u.source['text']).find(whitespace(u.text))))
     if any(u.display is None and re.search(
             r'\b(?:Gene\s+Alteration\s+Location|(?:Gene|Marker|Analyte|Test)\s+(?:Result|Value)\s+)',
             whitespace(u.text), re.I) for u in selected):

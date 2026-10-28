@@ -106,3 +106,39 @@ def test_negative_measurement_cannot_lose_its_sign_or_unit():
     assert check_text('A change of -3 mm was recorded.',u,{'S1':u.source})
     with pytest.raises(ValueError):check_text('A change of 3 mm was recorded.',u,{'S1':u.source})
     with pytest.raises(ValueError):check_text('The measured change was -3.',u,{'S1':u.source})
+
+
+@pytest.mark.parametrize('phrase',[
+    'failed to distinguish', 'was unable to distinguish',
+    'showed an inability to distinguish', 'struggled to distinguish',
+    "couldn't distinguish", 'couldn’t distinguish',
+])
+def test_negative_ability_paraphrase_reaches_semantic_audit(phrase):
+    u=unit('The core biopsy could not reliably distinguish the lymphoma subtypes because tissue architecture was limited.')
+    draft=f'The core biopsy {phrase} the subtypes because of limited tissue architecture.'
+    model=Models(draft=draft)
+    assert summarize('Why was definitive subtyping unavailable?',[u],model,{'S1':u.source})==[draft]
+    assert model.summaries==model.audits==1
+    # Recognition of negative grammar must not bypass the support audit.
+    rejected=Models(draft=draft,supported=False)
+    assert summarize('Why was definitive subtyping unavailable?',[u],rejected,{'S1':u.source}) is None
+    assert rejected.audits==2
+
+
+def test_absence_of_sufficient_architecture_can_be_rephrased_as_lacked():
+    u=unit('The core biopsy could not distinguish the subtypes because tissue architecture was limited.')
+    draft='The core biopsy lacked sufficient tissue architecture to distinguish the subtypes.'
+    model=Models(draft=draft)
+    assert summarize('Why was the biopsy inconclusive?',[u],model,{'S1':u.source})==[draft]
+    assert model.audits==1
+
+
+@pytest.mark.parametrize('draft',[
+    'The core biopsy established the lymphoma subtype despite limited tissue architecture.',
+    'Limited tissue architecture enabled definitive lymphoma subtyping.',
+    'The failure was resolved and the core biopsy established a definitive subtype.',
+])
+def test_limited_tissue_or_bare_failure_does_not_mask_positive_diagnosis(draft):
+    u=unit('The core biopsy could not establish a definitive lymphoma subtype because tissue architecture was limited.')
+    with pytest.raises(ValueError,match='Lost negation'):
+        check_text(draft,u,{'S1':u.source})

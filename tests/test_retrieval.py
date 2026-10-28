@@ -58,3 +58,13 @@ def test_flattened_numeric_columns_are_not_generation_evidence():
 def test_related_medication_and_dose_phrase_is_not_split():
     question = 'What daily medication and dose is prescribed in the wellness record?'
     assert retrieval_questions(question) == [question]
+
+
+def test_pronoun_time_clause_keeps_its_measurement_subject():
+    question='List all the lesion sizes reported over time and when they were measured.'
+    assert retrieval_questions(question)==[question]
+
+
+def test_pronoun_location_clause_keeps_its_subject():
+    question='What was the mass size and where was it located?'
+    assert retrieval_questions(question)==[question]
