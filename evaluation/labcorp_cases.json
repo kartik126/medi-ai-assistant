@@ -1,0 +1,106 @@
+{
+  "name": "labcorp-concise-field-values-v1",
+  "documents": [
+    "2671 (1).pdf"
+  ],
+  "notes": "Local user-supplied document; gold values belong only in evaluation assertions, not runtime code. Physical page 4 for both fields. Not clinical validation.",
+  "cases": [
+    {
+      "id": "labcorp-tp53-vaf",
+      "category": "regression/labelled-table-answer",
+      "question": "What is the TP53 variant allele frequency?",
+      "expected_status": "answered",
+      "facts": [],
+      "pages": [
+        [
+          "2671 (1).pdf",
+          4
+        ]
+      ],
+      "required_patterns": [
+        "TP53.*variant allele frequency\\s*:\\s*17\\.9%"
+      ],
+      "forbidden_patterns": [
+        "Transcript",
+        "Pathogenic",
+        "Substitution",
+        "Receptor tyrosine"
+      ],
+      "allowed_citation_files": [
+        "2671 (1).pdf"
+      ],
+      "allowed_citation_pages": [
+        [
+          "2671 (1).pdf",
+          4
+        ]
+      ],
+      "max_answer_chars": 120
+    },
+    {
+      "id": "labcorp-erbb2-fold",
+      "category": "regression/labelled-table-answer",
+      "question": "What is the ERBB2 gain fold change?",
+      "expected_status": "answered",
+      "facts": [],
+      "pages": [
+        [
+          "2671 (1).pdf",
+          4
+        ]
+      ],
+      "required_patterns": [
+        "ERBB2.*gain fold change\\s*:\\s*7\\.1"
+      ],
+      "forbidden_patterns": [
+        "Transcript",
+        "Pathogenic",
+        "Substitution",
+        "Receptor tyrosine"
+      ],
+      "allowed_citation_files": [
+        "2671 (1).pdf"
+      ],
+      "allowed_citation_pages": [
+        [
+          "2671 (1).pdf",
+          4
+        ]
+      ],
+      "max_answer_chars": 120
+    },
+    {
+      "id": "labcorp-both-fields",
+      "category": "regression/labelled-table-answer",
+      "question": "What is the TP53 variant allele frequency and what is the ERBB2 gain fold change?",
+      "expected_status": "answered",
+      "facts": [],
+      "pages": [
+        [
+          "2671 (1).pdf",
+          4
+        ]
+      ],
+      "required_patterns": [
+        "TP53.*variant allele frequency\\s*:\\s*17\\.9%",
+        "ERBB2.*gain fold change\\s*:\\s*7\\.1"
+      ],
+      "forbidden_patterns": [
+        "Transcript",
+        "Pathogenic",
+        "Substitution",
+        "Receptor tyrosine"
+      ],
+      "allowed_citation_files": [
+        "2671 (1).pdf"
+      ],
+      "allowed_citation_pages": [
+        [
+          "2671 (1).pdf",
+          4
+        ]
+      ],
+      "max_answer_chars": 200
+    }
+  ]
+}

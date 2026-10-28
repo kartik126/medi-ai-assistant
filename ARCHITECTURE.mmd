@@ -1,0 +1,14 @@
+flowchart TD
+    UI[Streamlit browser interface] -->|Local HTTP| API[FastAPI: session and upload checks]
+    API --> W[Word: local LibreOffice conversion]
+    W --> P[PyMuPDF: physical-page text and chunks]
+    API -->|PDF| P
+    P --> E[Ollama: qwen3 text embeddings]
+    E --> DB[(Docker: PostgreSQL + pgvector)]
+    API -->|Question and selected document IDs| R[Scoped retrieval and eligible evidence]
+    DB --> R
+    R --> S[Gemma 3 via Ollama: select evidence IDs]
+    S --> T[Exact table fields or checked prose summary]
+    T --> V[Server-owned quotation and filename/page citations]
+    V -->|Answer or explicit abstention| UI
+    API --> F[Local original files and saved citation PDFs]

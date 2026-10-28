@@ -1,0 +1,23 @@
+[theme]
+base = "light"
+primaryColor = "#111111"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f5f5f5"
+textColor = "#171717"
+font = "sans-serif"
+baseFontSize = 16
+redColor = "#444444"
+orangeColor = "#444444"
+yellowColor = "#444444"
+blueColor = "#444444"
+greenColor = "#444444"
+violetColor = "#444444"
+redBackgroundColor = "#f5f5f5"
+orangeBackgroundColor = "#f5f5f5"
+yellowBackgroundColor = "#f5f5f5"
+blueBackgroundColor = "#f5f5f5"
+greenBackgroundColor = "#f5f5f5"
+violetBackgroundColor = "#f5f5f5"
+
+[client]
+toolbarMode = "minimal"

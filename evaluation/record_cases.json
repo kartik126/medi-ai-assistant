@@ -1,0 +1,134 @@
+{
+  "name": "synthetic-record-positive-negative-v1",
+  "documents": [
+    "completed-record.pdf",
+    "reference-only.pdf"
+  ],
+  "notes": "New synthetic challenges after architecture change; not clinical or held-out validation.",
+  "cases": [
+    {
+      "id": "filled-medication",
+      "category": "new-synthetic-record",
+      "question": "What daily medication and dose is prescribed in the wellness record?",
+      "expected_status": "answered",
+      "selected": [
+        "completed-record.pdf"
+      ],
+      "facts": [
+        "Exampledrug",
+        "5 mg",
+        "once daily"
+      ],
+      "pages": [],
+      "allowed_citation_files": [
+        "completed-record.pdf"
+      ]
+    },
+    {
+      "id": "filled-measurement",
+      "category": "new-synthetic-record",
+      "question": "What is the patient\u2019s measured A1C result in the wellness record?",
+      "expected_status": "answered",
+      "selected": [
+        "completed-record.pdf"
+      ],
+      "facts": [
+        "6.1%"
+      ],
+      "pages": [],
+      "allowed_citation_files": [
+        "completed-record.pdf"
+      ]
+    },
+    {
+      "id": "filled-name",
+      "category": "new-synthetic-record",
+      "question": "What is the patient\u2019s name?",
+      "expected_status": "answered",
+      "selected": [
+        "completed-record.pdf"
+      ],
+      "facts": [
+        "Fictional Person"
+      ],
+      "pages": [],
+      "allowed_citation_files": [
+        "completed-record.pdf"
+      ]
+    },
+    {
+      "id": "filled-zone",
+      "category": "new-synthetic-record",
+      "question": "What current zone is recorded for the patient?",
+      "expected_status": "answered",
+      "selected": [
+        "completed-record.pdf"
+      ],
+      "facts": [
+        "Green"
+      ],
+      "pages": [],
+      "allowed_citation_files": [
+        "completed-record.pdf"
+      ]
+    },
+    {
+      "id": "filled-variant",
+      "category": "new-synthetic-record",
+      "question": "What exact genetic variant is confirmed in the wellness record?",
+      "expected_status": "answered",
+      "selected": [
+        "completed-record.pdf"
+      ],
+      "facts": [
+        "c.123A>G"
+      ],
+      "pages": [],
+      "allowed_citation_files": [
+        "completed-record.pdf"
+      ]
+    },
+    {
+      "id": "reference-not-result",
+      "category": "new-synthetic-record",
+      "question": "What is the patient\u2019s measured A1C result?",
+      "expected_status": "insufficient_evidence",
+      "selected": [
+        "reference-only.pdf"
+      ],
+      "facts": [],
+      "pages": [],
+      "allowed_citation_files": [
+        "reference-only.pdf"
+      ]
+    },
+    {
+      "id": "record-no-prescription",
+      "category": "new-synthetic-record",
+      "question": "What daily medication is prescribed?",
+      "expected_status": "insufficient_evidence",
+      "selected": [
+        "reference-only.pdf"
+      ],
+      "facts": [],
+      "pages": [],
+      "allowed_citation_files": [
+        "reference-only.pdf"
+      ]
+    },
+    {
+      "id": "record-no-name",
+      "category": "new-synthetic-record",
+      "question": "What is the patient\u2019s name?",
+      "expected_status": "insufficient_evidence",
+      "selected": [
+        "reference-only.pdf"
+      ],
+      "facts": [],
+      "pages": [],
+      "allowed_citation_files": [
+        "reference-only.pdf"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant UI as Streamlit
+    participant API as FastAPI
+    participant Store as PostgreSQL + pgvector
+    participant Model as Local model adapters
+    UI->>API: Create session
+    UI->>API: Upload PDF/DOC/DOCX (multipart)
+    API->>API: Validate, extract pages, split chunks
+    API->>Model: Embed chunks in bounded batches
+    API->>Store: Transactionally commit metadata, text and vectors
+    API-->>UI: Per-file ready/error/warning statuses
+    UI->>API: Question + selected ready document IDs
+    API->>API: Resolve named sources and recorded-data eligibility
+    API->>Store: Retrieve scoped chunks and bounded same-page neighbors
+    API->>API: Enumerate exact excerpts and project requested text-coordinate table cells
+    API->>Model: Question + server-owned evidence items and separate supporting quotes
+    Model-->>API: Structured excerpt-ID selections
+    API->>API: Check coverage/provenance; retain exact table fields
+    API->>Model: Selected prose only: draft concise paraphrases
+    Model-->>API: Evidence IDs + proposed text
+    API->>API: Check numbers, units, entities, negation and qualifications
+    API->>Model: Check support/completeness against exact quotes
+    Model-->>API: Structured support checks
+    API->>API: At most one repair; attach original quotes and physical-page citations
+    API-->>UI: Cited answer or insufficient-evidence response

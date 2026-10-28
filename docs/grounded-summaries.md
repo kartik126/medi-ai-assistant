@@ -1,0 +1,17 @@
+# Natural answers with separate source quotations
+
+The previous production path intentionally displayed selected source sentences as the main answer. It prevented free-form claim invention but also copied long headings and prose verbatim. The UI was already rendering the answer and source-card quotation separately.
+
+Production Ollama answering now follows retrieval → evidence selection → concise paraphrase → checks → source cards. A summarizer gets only the selected evidence items, each with a server-owned ID. It returns a short answer for each item; it cannot author source URLs, page numbers, citations or quotations. The server attaches the original quotation and existing filename/physical-page citation after validation.
+
+`backend/summarizing.py` checks structure and evidence-ID coverage, numeric values, measurement units, scientific entities/variant notation, laterality, negation and obvious unsupported certainty. A separate model request then checks support and completeness against each corresponding quotation. One bounded rewrite is permitted. Persistent failure produces an explicit validation abstention with inspectable source cards, rather than silently copying the original paragraph into the main answer.
+
+Table field/value statements and short atomic values remain exact; scientific values should not be creatively reworded. Explicit verbatim/exact-quote requests also retain source wording. Injected legacy test adapters without summarization retain their compatibility path; the configured production Ollama adapter supports both summarization and support checking.
+
+The writer preserves follow-up timing and clinical uncertainty. For example, absence of evident disease at a one-year observation does not become a claim of cure or permanent remission. Treatment recommendations are not converted into prescriptions, and guide thresholds are not patient results. The existing source-selection and patient-data eligibility checks still run before drafting.
+
+These are layered safeguards, not proof of medical entailment. The verifier uses the same local model family, can make mistakes, and is not independent clinical review. Conservative checks can falsely reject a valid paraphrase. Synthesis adds bounded local model calls and latency; source quotations and exact numeric tables remain available for inspection. No model change, database reset, re-index or re-upload is needed.
+
+Regression tests cover supported rewriting, retained quotes, fake source IDs, new numbers/genes, changed units/laterality, lost negation, unsupported cure claims, copied long prose, semantic rejection, explicit verbatim requests, immutable table values and the actual production API branch. Live development results and failures remain in ignored local evaluation files; earlier runs are preserved locally. A shareable summary is in [verification.md](verification.md).
+
+Verified source-title/publisher aliases are passed as source labels so the writer may correctly name a guide (for example CDC) without confusing that metadata with medical evidence. Other entities must still come from the quotation. Numeric checks compare canonical values, allowing cosmetic thousands separators while rejecting a different value or sign; measurement dimensions and full ISO dates remain checked. Negation checks recognize ordinary negative paraphrases such as “against,” “avoid,” and “smoke-free.” Fixed server feedback is used for one repair; arbitrary model text/errors are not promoted into system instructions.

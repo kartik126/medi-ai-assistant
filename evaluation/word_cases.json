@@ -1,0 +1,92 @@
+{
+  "name": "word-doc-docx-pdf-mixed-intake-v1",
+  "documents": [
+    "word-modern.docx",
+    "word-legacy.doc",
+    "training-a.pdf"
+  ],
+  "notes": "Synthetic Word/PDF tests; Word citations refer to saved converted PDF pages. Values are fixture assertions, not runtime constants.",
+  "cases": [
+    {
+      "id": "docx-archive",
+      "category": "word-upload/physical-citation",
+      "question": "What is the fictional archive code?",
+      "selected": [
+        "word-modern.docx"
+      ],
+      "expected_status": "answered",
+      "facts": [
+        "CEDAR-42"
+      ],
+      "pages": [
+        [
+          "word-modern.docx",
+          2
+        ]
+      ],
+      "allowed_citation_files": [
+        "word-modern.docx"
+      ],
+      "allowed_citation_pages": [
+        [
+          "word-modern.docx",
+          2
+        ]
+      ]
+    },
+    {
+      "id": "doc-archive",
+      "category": "word-upload/physical-citation",
+      "question": "What is the fictional archive code?",
+      "selected": [
+        "word-legacy.doc"
+      ],
+      "expected_status": "answered",
+      "facts": [
+        "CEDAR-42"
+      ],
+      "pages": [
+        [
+          "word-legacy.doc",
+          2
+        ]
+      ],
+      "allowed_citation_files": [
+        "word-legacy.doc"
+      ],
+      "allowed_citation_pages": [
+        [
+          "word-legacy.doc",
+          2
+        ]
+      ]
+    },
+    {
+      "id": "mixed-pdf-retained",
+      "category": "word-upload/physical-citation",
+      "question": "What is the archive cabinet code?",
+      "selected": [
+        "training-a.pdf"
+      ],
+      "expected_status": "answered",
+      "facts": [
+        "ORCHID-7"
+      ],
+      "pages": [
+        [
+          "training-a.pdf",
+          4
+        ]
+      ],
+      "allowed_citation_files": [
+        "training-a.pdf"
+      ],
+      "allowed_citation_pages": [
+        [
+          "training-a.pdf",
+          4
+        ]
+      ]
+    }
+  ]
+}

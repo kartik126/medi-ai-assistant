@@ -1,0 +1,20 @@
+services:
+  db:
+    # Verified locally on ARM64: PostgreSQL 17.11, pgvector 0.8.7.
+    image: pgvector/pgvector:pg17@sha256:ac08538c6f8b9904c33c8224c5e5706dbe760aca29db1d096972b4052c22a75d
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-medical_ai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local_dev_only}
+      POSTGRES_DB: ${POSTGRES_DB:-medical_ai}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    mem_limit: 1g
+volumes:
+  postgres_data:

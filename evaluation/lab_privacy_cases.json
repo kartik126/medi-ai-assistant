@@ -1,0 +1,40 @@
+{
+  "name": "sample-lab-data-minimization-v1",
+  "documents": [
+    "89011-sample.pdf",
+    "On-your-way-to-preventing-type-2-diabetes.pdf"
+  ],
+  "notes": "New regression authored after manual review of the frozen baseline revealed unrequested sample age/birth-date details. Original baseline expectations/results are unchanged.",
+  "cases": [
+    {
+      "id": "lab-control-no-unrequested-demographics",
+      "category": "new-regression/data-minimization",
+      "question": "What MFI value is given for the experimental control in the Btk flow sample report?",
+      "expected_status": "answered",
+      "pages": [],
+      "facts": [
+        "1.53"
+      ],
+      "quote_patterns": [
+        "MFI\\s*=\\s*1\\.53"
+      ],
+      "page_groups": [
+        [
+          [
+            "89011-sample.pdf",
+            1
+          ]
+        ]
+      ],
+      "allowed_citation_files": [
+        "89011-sample.pdf"
+      ],
+      "forbidden_patterns": [
+        "birth\\s*date",
+        "\\byears old\\b",
+        "patient.?s?\\s+name",
+        "order number"
+      ]
+    }
+  ]
+}

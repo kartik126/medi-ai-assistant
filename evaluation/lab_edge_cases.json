@@ -1,0 +1,181 @@
+{
+  "name": "sample-lab-edge-cases-v1",
+  "documents": [
+    "89011-sample.pdf",
+    "On-your-way-to-preventing-type-2-diabetes.pdf"
+  ],
+  "notes": "The user-uploaded report is explicitly marked SAMPLE/Test Environment. Extraction/negation tests, not diagnosis or treatment validation.",
+  "cases": [
+    {
+      "id": "lab-monocyte-mfi",
+      "category": "challenge/lab-report",
+      "question": "What MFI value is reported for monocytes in the Btk flow sample report?",
+      "expected_status": "answered",
+      "pages": [],
+      "facts": [
+        "1.22"
+      ],
+      "quote_patterns": [
+        "MFI\\s*=\\s*1\\.22"
+      ],
+      "page_groups": [
+        [
+          [
+            "89011-sample.pdf",
+            1
+          ]
+        ]
+      ],
+      "allowed_citation_files": [
+        "89011-sample.pdf"
+      ]
+    },
+    {
+      "id": "lab-control-mfi",
+      "category": "challenge/lab-report",
+      "question": "What MFI value is given for the experimental control in the Btk flow sample report?",
+      "expected_status": "answered",
+      "pages": [],
+      "facts": [
+        "1.53"
+      ],
+      "quote_patterns": [
+        "MFI\\s*=\\s*1\\.53"
+      ],
+      "page_groups": [
+        [
+          [
+            "89011-sample.pdf",
+            1
+          ]
+        ]
+      ],
+      "allowed_citation_files": [
+        "89011-sample.pdf"
+      ]
+    },
+    {
+      "id": "lab-cd20-percent",
+      "category": "challenge/lab-report",
+      "question": "What CD20-positive B-cell percentage is measured in the sample report?",
+      "expected_status": "answered",
+      "pages": [],
+      "facts": [],
+      "required_patterns": [
+        "0\\.2\\s*(?:%|percent)"
+      ],
+      "page_groups": [
+        [
+          [
+            "89011-sample.pdf",
+            1
+          ]
+        ]
+      ],
+      "allowed_citation_files": [
+        "89011-sample.pdf"
+      ]
+    },
+    {
+      "id": "lab-negation-not-rule-out",
+      "category": "challenge/lab-report",
+      "question": "Does this report rule out X-linked agammaglobulinemia (XLA)?",
+      "expected_status": "answered",
+      "pages": [],
+      "facts": [],
+      "required_patterns": [
+        "(?:does not|doesn.t|cannot|can.t|not)\\s+(?:rule|ruled|exclude)|not ruled out"
+      ],
+      "page_groups": [
+        [
+          [
+            "89011-sample.pdf",
+            1
+          ]
+        ]
+      ],
+      "allowed_citation_files": [
+        "89011-sample.pdf"
+      ]
+    },
+    {
+      "id": "lab-further-testing",
+      "category": "challenge/lab-report",
+      "question": "What further testing does the Btk flow sample report recommend?",
+      "expected_status": "answered",
+      "pages": [],
+      "facts": [],
+      "required_patterns": [
+        "BTK",
+        "genetic"
+      ],
+      "page_groups": [
+        [
+          [
+            "89011-sample.pdf",
+            1
+          ]
+        ]
+      ],
+      "allowed_citation_files": [
+        "89011-sample.pdf"
+      ]
+    },
+    {
+      "id": "lab-expression-not-function",
+      "category": "challenge/lab-report",
+      "question": "Why does the report say essentially normal Btk protein expression does not rule out XLA?",
+      "expected_status": "answered",
+      "pages": [],
+      "facts": [],
+      "required_patterns": [
+        "25.{0,8}30",
+        "function"
+      ],
+      "page_groups": [
+        [
+          [
+            "89011-sample.pdf",
+            1
+          ]
+        ]
+      ],
+      "allowed_citation_files": [
+        "89011-sample.pdf"
+      ]
+    },
+    {
+      "id": "lab-no-confirmed-variant",
+      "category": "challenge/lab-report",
+      "question": "What exact BTK genetic variant has been confirmed for the sample patient?",
+      "expected_status": "insufficient_evidence",
+      "pages": [],
+      "facts": [],
+      "selected": [
+        "89011-sample.pdf"
+      ]
+    },
+    {
+      "id": "lab-no-prescription",
+      "category": "challenge/lab-report",
+      "question": "What daily medication and dose has been prescribed to the patient in the Btk flow report?",
+      "expected_status": "insufficient_evidence",
+      "pages": [],
+      "facts": [],
+      "selected": [
+        "89011-sample.pdf"
+      ]
+    },
+    {
+      "id": "lab-excluded-by-selection",
+      "category": "challenge/lab-report",
+      "question": "What is the monocyte MFI measured in the Btk flow sample report?",
+      "expected_status": "insufficient_evidence",
+      "pages": [],
+      "facts": [],
+      "selected": [
+        "On-your-way-to-preventing-type-2-diabetes.pdf"
+      ]
+    }
+  ]
+}
